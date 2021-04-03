@@ -8,6 +8,5 @@ import { WebClient, WebAPICallResult } from '@slack/web-api';
 (async () => {
     let counter = 0;
 
-
-    console.log(`[INFO] 全 ${counter} 件の処理を終えました。`);
+    console.log(`[INFO] 全 ${counter} 件の処理を終えました。 finished.`);
 })();
