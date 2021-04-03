@@ -6,6 +6,7 @@ import { WebClient, WebAPICallResult } from '@slack/web-api';
 
 // メイン処理
 (async () => {
+  // 環境変数読み込み
   const token = process.env.SLACK_TOKEN;
   if (!token) {
     console.log(`[ERROR] 環境変数 SLACK_TOKEN が設定されていません。`);
@@ -15,6 +16,7 @@ import { WebClient, WebAPICallResult } from '@slack/web-api';
   const emailsFile = process.env.EMAILS_FILE || './emails.csv';
   const templateFile = process.env.DM_TEMPLATE_FILE || './dm_template.txt';
 
+  // 初期化処理
   const web = new WebClient(token);
   const emailsArray: Array<Array<string>> = fs
     .readFileSync(emailsFile)
@@ -24,9 +26,13 @@ import { WebClient, WebAPICallResult } from '@slack/web-api';
   const templateString = fs.readFileSync(templateFile).toString('utf-8');
 
   console.log(`[INFO] 全 ${emailsArray.length} 件の処理を開始します。`);
+
   let counter = 0;
+  // 行ごとの処理のループ
   for (const emails of emailsArray) {
     const users: Array<LookupByEmailResult> = [];
+
+    // 行内の処理のループ
     for (const email of emails) {
       try {
         const rookupByEmailResult = (await web.users.lookupByEmail({
@@ -46,6 +52,7 @@ import { WebClient, WebAPICallResult } from '@slack/web-api';
       text = text.replace(`{${i}}`, `<@${users[i].user.id}>`);
     });
 
+    // DMの作成及び投稿処理
     const usersString = users.map((u) => u.user.id).join(',');
     try {
       const conversationsOpenResult = (await web.conversations.open({
